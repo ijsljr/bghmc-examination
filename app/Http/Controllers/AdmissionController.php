@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admission;
 use App\Http\Requests\StoreAdmissionRequest;
 use App\Http\Requests\UpdateAdmissionRequest;
+use Illuminate\Support\Facades\DB;
 
 class AdmissionController extends Controller
 {
@@ -15,7 +16,9 @@ class AdmissionController extends Controller
      */
     public function index()
     {
-        //
+        $admissions = DB::table('admissions')->orderBy('date', 'asc');
+
+        return view('pages.admission.index');
     }
 
     /**

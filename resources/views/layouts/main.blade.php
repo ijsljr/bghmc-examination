@@ -5,14 +5,19 @@
 
 
     <body>
-        @include('includes.navbar')
-        
-        @include('includes.messages')
+        <div id="app">
+            
+            @include('includes.messages')
 
-            @yield('content')
+            @include('includes.navbar')
+            
+            <main class="py-4">
+                @yield('content')
+            </main>
 
-        @include('includes.footer')
+            @include('includes.footer')
 
-        @include('includes.script')
+            @include('includes.script')
+        </div>
     </body>
 </html>

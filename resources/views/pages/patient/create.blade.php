@@ -1,8 +1,13 @@
 @extends('layouts.main')
 
 @section('content')
+<h3 class="m-0 font-weight-bold" style="text-align: center;">
+    <b>N E W</b><b style="color: #A4DE02"> P A T I E N T</b>
+</h3>
+    
+<hr style="color: #d00606">
 
-<div class="card" style="width: 70%; margin: auto; margin-top: 100px">
+<div class="card" style="width: 70%; margin: auto; margin-top: 20px">
 
 
     <div class="card-head">
@@ -58,23 +63,37 @@
             </div>
     
             <div class="row mb-3">
-                <label for="birth_date" class="col-sm-2 col-form-label">Birthdate</label>
+                <label for="birthdate" class="col-sm-2 col-form-label">Birthdate</label>
                 <div class="col-sm-10">
-                    <input type="date" class="form-control" name="birth_date" id="birthdate" required>
+                    <input type="date" class="form-control" name="birthdate" id="birthdate" max="<?php echo date('Y-m-d'); ?>" required>
                 </div>
             </div>
 
-            <div class="row mb-3" id="ward_div">
-                <label for="ward" class="col-sm-2 col-form-label">Ward</label>
-                <div class="col-sm-10">
-                  <select style="color: black;" class="form-control" id="ward" name="ward" disabled>
-                    <option value=""selected disabled>---</option>
-                    @foreach ($wards as $ward)
-                      <option value="{{ $ward->id }}">{{ $ward->ward_name}}</option>
-                    @endforeach
-                  </select>
+            <!-- FIELDS FOR ADMITTING PATIENT-->
+            <div id="hidden_fields" style="display: none">
+                <div class="row mb-3" id="ward_div">
+                    <label for="ward" class="col-sm-2 col-form-label">Ward</label>
+                    <div class="col-sm-10">
+                    <select style="color: black;" class="form-control" id="ward" name="ward">
+                        <option value=""selected disabled>---</option>
+                        @foreach ($wards as $ward)
+                        <option value="{{ $ward->id }}">{{ $ward->ward_name}}</option>
+                        @endforeach
+                    </select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="admission_date" class="col-sm-2 col-form-label">Admission Date/Time</label>
+                    <div class="col-sm-5">
+                        <input type="date" class="form-control" name="admission_date" id="admission_date" max="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                    <div class="col-sm-5">
+                        <input type="time" class="form-control" name="admission_time" id="admission_time">
+                    </div>
                 </div>
             </div>
+            <!-- END -->
     
             <div class="form-group row mb-0">
                 <div class="col-md-6 offset-md-2">

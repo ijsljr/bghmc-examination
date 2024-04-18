@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ward;
 use App\Http\Requests\StoreWardRequest;
 use App\Http\Requests\UpdateWardRequest;
+use Illuminate\Support\Facades\DB;
 
 class WardController extends Controller
 {
@@ -15,7 +16,9 @@ class WardController extends Controller
      */
     public function index()
     {
-        //
+        $wards = DB::table('wards')->orderBy('ward_name');
+
+        return view('pages.ward.index');
     }
 
     /**
