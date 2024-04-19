@@ -21,7 +21,12 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+//RESOURCE ROUTES -------------------------------------------------------------------------------------------------
 Route::resource('/patients', 'App\Http\Controllers\PatientController');
 Route::resource('/admissions', 'App\Http\Controllers\AdmissionController');
 Route::resource('/wards', 'App\Http\Controllers\WardController');
+// ----------------------------------------------------------------------------------------------------------------
 
+// CUSTOM ROUTES - PATIENT MODEL ----------------------------------------------------------------------------------
+Route::get('/patients/{id}/delete', 'App\Http\Controllers\PatientController@softDelete')->name('patientSoftDelete');
+// ----------------------------------------------------------------------------------------------------------------

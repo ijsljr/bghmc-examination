@@ -51,8 +51,6 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
-
-
             
         //TEST IF THE CHECKBOX FOR checkbox_admit IS CHECKED (YES = CREATE NEW ADMISSION, NO = NO ADDED ACTION)
         $value = request('checkbox_admit');
@@ -90,14 +88,29 @@ class PatientController extends Controller
                                                 ->where('birthdate',  $birthdate)
                                                 ->first();  
             
+
+
             //CREATE NEW ADMISSION
             $admission_details = new Admission();
             $admission_details->patient_id = $patient_id->id;
             $admission_details->ward_id = request('ward');
-            $admission_details->admission_date_time = Carbon::now();
+
+            //TEST WHICH ADMISSION DATE AND TIME TO USE(CURRENT OR USER INPUT)
+            if(is_null(request('admission_date')) == 'true'){
+                $admission_details->admission_date_time = request('alt_datetime');
+            }else{
+                $ad = request('admission_date');
+                $at = request('admission_time');
+                $seconds = '00';
+                $admission_details->admission_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $ad. ' '. $at .':'. $seconds);
+            }
+            
             $admission_details->status = 'Admitted';
             // $admission_details->author = Auth::user()->id;
             $admission_details->save();
+
+            return redirect()->route('patients.index')
+                                ->with('success', 'New patient has been admitted.');
             
         } else {
 
@@ -109,13 +122,12 @@ class PatientController extends Controller
             $patient_details->suffix_name = request('suffix_name');
             $patient_details->address = request('address');
             $patient_details->birthdate = request('birthdate');
-            // $patient_details->status = "admitted";
             // $patient_details->author = Auth::user()->id;
             $patient_details->save();
 
-        }
             return redirect()->route('patients.index')
-                                ->with('success', 'New patient has been admitted.');
+                                ->with('success', 'New patient has been added.');
+        }
     }
 
     /**
@@ -136,8 +148,10 @@ class PatientController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit(Patient $patient)
-    {
-        return view('pages.patient.edit');
+    {      
+            $patient_details = Patient::find($patient->id);
+
+        return view('pages.patient.edit', compact("patient_details"));
     }
 
     /**
@@ -147,9 +161,21 @@ class PatientController extends Controller
      * @param  \App\Models\Patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePatientRequest $request, Patient $patient)
+    public function update(Request $request, Patient $patient)
     {
-        //
+
+        $patient->update([
+                    'first_name' => $request->first_name,
+                    'middle_name' => $request->middle_name,
+                    'last_name' => $request->last_name,
+                    'suffix_name' => $request->suffix_name,
+                    'birthdate' => $request->birthdate,
+                    'address' => $request->address,
+                ]);
+
+        return redirect()->route('patients.index')
+                                    ->with('success', 'Successfully updated the patients details.');
+
     }
 
     /**
@@ -161,5 +187,27 @@ class PatientController extends Controller
     public function destroy(Patient $patient)
     {
         //
+    }
+
+    public function softDelete(Request $request, Patient $patient)
+    {
+        //CHECK IF PATIENT HAS AN EXISTING ADMISSION
+        $patient_status = DB::table('patients')->select('status')->where('id', $request->id)->first();
+
+        if($patient_status->status == 'Admitted'){
+            return redirect()->route('patients.index')
+                                      ->with('danger', 'Patient is currently admitted. Please discharge the patient first before deleting.');
+        } else{
+            $patient = DB::table('patients')
+            ->where('id', $request->id)
+            ->update(['status' => 'Inactive']);
+  
+            return redirect()->route('patients.index')
+                                      ->with('success', 'Successfully deleted the patients account.');
+  
+        }
+
+
+
     }
 }

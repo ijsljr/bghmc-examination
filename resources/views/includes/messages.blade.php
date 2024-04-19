@@ -1,19 +1,15 @@
 @if (Session::has('success'))
-    <div class="alert alert-success alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert">
-            <i class="fa fa-times"></i>
-        </button>
-        <strong>Success !</strong> {{ session('success') }}
-    </div>
+<div class="alert alert-success alert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>{{ session('success') }}</strong>
+  </div>
 @endif
 
 @if (Session::has('danger'))
-    <div class="alert alert-danger alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert">
-            <i class="fa fa-times"></i>
-        </button>
-        <strong>Error !</strong> {{ session('danger') }}
-    </div>
+<div class="alert alert-danger alert-dismissible">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>{{ session('danger') }}</strong>
+  </div>
 @endif
 
 @if ($message = Session::get('success-password'))

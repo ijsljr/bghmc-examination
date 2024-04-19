@@ -4,14 +4,14 @@
 @include('includes.head')
 
 
-    <body>
+    <body onLoad="startTime()">
         <div id="app">
             
             @include('includes.messages')
 
             @include('includes.navbar')
             
-            <main class="py-4">
+            <main class="py-4" style="margin-left: 5%; margin-right: 5%">
                 @yield('content')
             </main>
 

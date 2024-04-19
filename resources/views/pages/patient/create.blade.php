@@ -2,7 +2,7 @@
 
 @section('content')
 <h3 class="m-0 font-weight-bold" style="text-align: center;">
-    <b>N E W</b><b style="color: #A4DE02"> P A T I E N T</b>
+    <b>N E W</b><b style="color: #d00606"> P A T I E N T</b>
 </h3>
     
 <hr style="color: #d00606">
@@ -22,7 +22,7 @@
                                     
             <div class="row mb-3">
                 <div class="col-sm-10">
-                  <input type="checkbox" id="checkbox_admit" name="checkbox_admit" value="1" onclick="show_ward()">
+                  <input type="checkbox" id="checkbox_admit" name="checkbox_admit" value="1" onclick="show_admission_fields()">
                   <label for="checkbox_admit">Admit New Patient</label><br>
                 </div>
             </div>
@@ -90,6 +90,13 @@
                     </div>
                     <div class="col-sm-5">
                         <input type="time" class="form-control" name="admission_time" id="admission_time">
+                    </div>
+                    <div class="row mb-3">
+                        <label for="alt_datetime" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" id="alt_datetime" name="alt_datetime" value="{{ date('Y-m-d H:i:s'); }}" onclick="use_current_datetime()">
+                            <label for="checkbox_admit"><span style="b">Use current date and time ({{date('F j, Y ');}}</span><span id="clock"></span><span>)</span></label><br>
+                        </div>
                     </div>
                 </div>
             </div>
