@@ -42,4 +42,23 @@
         if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
         return i;
     }
+
+    $('body').on('keyup','#search-patients',function()
+    {
+        var keyword = $(this).val();
+
+        $.ajax({
+            type: "POST",
+            url: "{{ route('searchPatients')}}",
+            dataType: "json",
+            data: {keyword: keyword,
+                    _token: '{{csrf_token()}}'
+            },
+            success: function(res){
+                    $('#dynamic-row').empty();
+                    $('#dynamic-row').append(res);
+
+                }
+        });
+    });
 </script>

@@ -10,6 +10,8 @@ use App\Http\Requests\UpdatePatientRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class PatientController extends Controller
 {
@@ -20,13 +22,15 @@ class PatientController extends Controller
      */
     public function index()
     {
-        // $patients = DB::table('patients')->select('first_name', 'middle_name', 'last_name', 'suffix_name', 'address', 'birthdate', 'status')->where('status', 'admitted')->orderBy('last_name', 'desc')->paginate(10);
+        // $patients_admissions = DB::table('patients')
+        // ->join('admissions', 'patients.id', '=', 'admissions.patient_id')
+        // ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'admissions.status as status')
+        // ->paginate(10);
 
         $patients_admissions = DB::table('patients')
-        ->join('admissions', 'patients.id', '=', 'admissions.patient_id')
-        ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'admissions.status as status')
-        ->where('patients.status', 'Admitted')
-        ->paginate(10);
+                                    ->leftJoin('admissions', 'patients.id', '=', 'admissions.patient_id')
+                                    ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'patients.status as status')->paginate(10);
+                                    
 
         return view('pages.patient.index', ['patients_admissions' => $patients_admissions]);
     }
@@ -138,7 +142,9 @@ class PatientController extends Controller
      */
     public function show(Patient $patient)
     {
-        //
+        $expense = Expenses::find($request->expense);
+
+        return view('expenses.show', compact('expense'));
     }
 
     /**
@@ -186,7 +192,17 @@ class PatientController extends Controller
      */
     public function destroy(Patient $patient)
     {
-        //
+        
+    }
+
+    public function restore(Request $request, Patient $patient)
+    {
+        $patient = DB::table('patients')
+                                ->where('id', $request->id)
+                                ->update(['status' => 'Inactive']);
+
+        return redirect()->route('recycleBinList')
+                                    ->with('success', 'Successfully restored the patients account.');
     }
 
     public function softDelete(Request $request, Patient $patient)
@@ -196,18 +212,101 @@ class PatientController extends Controller
 
         if($patient_status->status == 'Admitted'){
             return redirect()->route('patients.index')
-                                      ->with('danger', 'Patient is currently admitted. Please discharge the patient first before deleting.');
+                                      ->with('danger', 'Deletion failed. Patient is currently admitted.');
         } else{
             $patient = DB::table('patients')
             ->where('id', $request->id)
-            ->update(['status' => 'Inactive']);
+            ->update(['status' => 'Recycled']);
   
             return redirect()->route('patients.index')
-                                      ->with('success', 'Successfully deleted the patients account.');
+                                      ->with('success', 'Successfully deleted the patients account. You can still restore deleted files from the recycle bin.');
   
         }
+    }
 
+    public function hardDelete(Request $request, Patient $id)
+    {
 
+       if(Hash::check($request->password_confirmation, Auth::user()->password)){
 
+            $id->delete();
+            
+            return redirect()->route('recycleBinList')
+            ->with('success', 'Successfully deleted patient data.');
+       } else {
+            return redirect()->route('recycleBinList')
+            ->with('danger', 'Incorrect password.');
+       }
+    }
+
+    public function admitPatient(Request $request, Patient $patient)
+    {
+        //CHECK IF PATIENT HAS AN EXISTING ADMISSION
+        $patient_status = DB::table('patients')->select('status')->where('id', $request->id)->first();
+
+        if($patient_status->status == 'Admitted'){
+            return redirect()->route('patients.index')
+                                      ->with('danger', 'Admission failed. Patient is already admitted.');
+        } else if($patient_status->status == 'Inactive'){
+            $patient = DB::table('patients')
+            ->where('id', $request->id)
+            ->update(['status' => 'Recycled']);
+  
+            return redirect()->route('patients.index')
+                                      ->with('success', 'Successfully deleted the patients account. You can still restore deleted files from the recycle bin.');
+        } else{
+            return redirect()->route('patients.index');
+  
+        }
+    }
+
+    public function dischargePatient(Request $request, Patient $patient)
+    {
+        //CHECK IF PATIENT HAS AN EXISTING ADMISSION
+        $patient_status = DB::table('patients')->select('status')->where('id', $request->id)->first();
+
+        if($patient_status->status == 'Admitted'){
+            $patient = DB::table('patients')
+            ->where('id', $request->id)
+            ->update(['status' => 'Discharged']);
+  
+            return redirect()->route('patients.index')
+                                      ->with('success', 'Successfully discharged the patient.');
+        } else if($patient_status->status == 'Inactive'){
+            return redirect()->route('patients.index')
+                                      ->with('danger', 'Discharge failed. Patient is not admitted.');
+        } else{
+            return redirect()->route('patients.index');
+  
+        }
+    }
+
+    public function recycleBinList()
+    {
+        $patients = DB::table('patients')->select('id', 'first_name', 'middle_name', 'last_name', 'suffix_name', 'address', 'birthdate', 'status')->where('status', 'Recycled')->orderBy('last_name', 'desc')->paginate(10);
+
+        return view('pages.patient.recycle_bin', ['patients' => $patients]);
+    }
+
+    public function searchPatients(Request $request)
+    {
+            $keyword = $request->get('keyword');
+
+            $patient_admissions = DB::table('patients')
+            ->join('admissions', 'patients.id', '=', 'admissions.patient_id')
+            ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'patients.status as status', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge')
+            ->where(function ($query) use ($keyword) {
+                                $query->where('patients.id', 'LIKE', '%'.$keyword.'%')
+                                        ->orWhere('patients.first_name', 'LIKE', '%'.$keyword.'%')
+                                        ->orWhere('patients.middle_name', 'LIKE', '%'.$keyword.'%')
+                                        ->orWhere('patients.last_name', 'LIKE', '%'.$keyword.'%')
+                                        ->orWhere('patients.suffix_name', 'LIKE', '%'.$keyword.'%')
+                                        ->orWhere('patients.address', 'LIKE', '%'.$keyword.'%')
+                                        ->orWhere('patients.birthdate', 'LIKE', '%'.$keyword.'%')
+                                        ->orWhere('patients.status', 'LIKE', '%'.$keyword.'%');
+                            })
+                            ->get();
+    
+            return view('includes.partials.patientSearch', compact('patient_admissions'))->render();
     }
 }

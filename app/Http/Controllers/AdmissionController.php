@@ -16,9 +16,13 @@ class AdmissionController extends Controller
      */
     public function index()
     {
-        $admissions = DB::table('admissions')->orderBy('date', 'asc');
+        $patients_admissions = DB::table('patients')
+                                ->join('admissions', 'patients.id', '=', 'admissions.patient_id')
+                                ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'admissions.status as status')
+                                ->where('patients.status', 'Admitted')
+                                    ->paginate(10);
 
-        return view('pages.admission.index');
+        return view('pages.admissions.index', ['patients_admissions' => $patients_admissions]);
     }
 
     /**

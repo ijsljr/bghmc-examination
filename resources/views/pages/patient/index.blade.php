@@ -8,8 +8,13 @@
     
     <hr style="color: #d00606">
 
-    <a  class="btn btn-outline-primary btn-sm" id="buttonEdit" href={{ route('patients.create') }}><b>NEW PATIENT</b></a><br><br>
-
+    <a  class="btn btn-outline-primary btn-sm" id="buttonEdit" href={{ route('patients.create') }}><b>NEW PATIENT</b></a>&nbsp<a  class="btn btn-outline-primary btn-sm" id="buttonEdit" href={{ route('recycleBinList') }}><b>RECYCLE BIN</b></a><br><br>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1"><b></b> &nbsp<i class="fa-solid fa-magnifying-glass"></i></span>
+        </div>
+            <input type="text" name="search" id="search-patients" class="form-control my-0 py-1 " aria-label="Search transactions..." placeholder="..."> <a class="btn " onClick="window.location.reload();" style="color: rgb(6, 196, 6)"><i class="fa-solid fa-arrows-rotate"></i></a>
+        </div>
     <div>
         <table class="table table-sm" style="text-align:left;">
             <thead class=""  style="color: black; background-color: #f5f5f5">
@@ -21,7 +26,7 @@
                     <th><b>ACTIONS</b></th>
                 <tr>
             </thead>
-            <tbody>
+            <tbody id="dynamic-row" style="font-size:13px; vertical-align:middle">
                 @foreach ($patients_admissions as $patient_admission)
                 <tr>
                     <td><b><?php if(empty($patient_admission->mname) && isset($patient_admission->sname)  ) {
@@ -36,7 +41,7 @@
                     <td><b>{{ strtoupper($patient_admission->status); }}</b></td>
                     <td><b><?php $date = date_create($patient_admission->admission); echo date_format($date, "h:i A - M. d") ?></b></td>
                     <td><b><?php if(is_null($patient_admission->discharge)){ echo 'N/A';}else{$date = date_create($patient_admission->discharge); echo date_format($date, "h:i A");} ?></b></td>
-                    <td><a class="btn btn-outline-warning btn-sm" id="buttonEdit" href="{{ route('patients.show',  $patient_admission->id)}}"><b>VIEW</b></a>&nbsp<a class="btn btn-outline-info btn-sm" id="buttonEdit" href="{{ route('patients.edit',  $patient_admission->id)}}"><b>EDIT</b></a>&nbsp<a class="btn btn-outline-danger btn-sm" id="buttonEdit" href="{{ route('patientSoftDelete', $patient_admission->id) }}"><b>DELETE</b></a></td>
+                    <td><a class="btn btn-warning btn-sm active" id="buttonEdit" href="{{ route('patients.show',  $patient_admission->id)}}"><b>VIEW</b></a>&nbsp<a class="btn btn-outline-warning btn-sm" id="buttonEdit" href="{{ route('patients.show',  $patient_admission->id)}}"><b>ADMIT</b></a>&nbsp<a class="btn btn-outline-warning btn-sm" id="buttonEdit" href="{{ route('patients.show',  $patient_admission->id)}}"><b>DISCHARGE</b></a>&nbsp<a class="btn btn-outline-info btn-sm" id="buttonEdit" href="{{ route('patients.edit',  $patient_admission->id)}}"><b>EDIT</b></a>&nbsp<a class="btn btn-outline-danger btn-sm" id="buttonEdit" href="{{ route('patientSoftDelete', $patient_admission->id) }}"><b>DELETE</b></a></td>
                 </tr>
                 @endforeach
                 <tr>
