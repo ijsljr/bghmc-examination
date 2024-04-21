@@ -16,7 +16,7 @@
 
     <div class="card-body">
 
-        <form method="POST" action="{{ route('dischargingPatient', $patients_admission_details->id)}}" style="font-size: 13px">
+        <form method="POST" action="{{ route('dischargingPatient', $patients_admission_details->id)}}" style="font-size: 13px; font-weight:bold;">
             @csrf
             @method('PUT')
             
@@ -59,10 +59,10 @@
             <div class="row mb-3">
                 <label for="discharge_date" class="col-sm-2 col-form-label">DISCHARGE DATE/TIME</label>
                 <div class="col-sm-5">
-                    <input type="date" class="form-control" style="font-size: 13px" name="discharge_date" id="discharge_date" max="<?php echo date('Y-m-d'); ?>" required>
+                    <input type="date" class="form-control" style="font-size: 13px; font-weight: bold" name="discharge_date" id="discharge_date"  max="<?php echo date('Y-m-d'); ?>" required>
                 </div>
                 <div class="col-sm-5">
-                    <input type="time" class="form-control"  style="font-size: 13px" name="discharge_time" id="discharge_time" required>
+                    <input type="time" class="form-control"  style="font-size: 13px; font-weight: bold" name="discharge_time" id="discharge_time"  required>
                 </div>
                 <div class="row mb-3">
                     <label for="alt_datetime" class="col-sm-2 col-form-label"></label>

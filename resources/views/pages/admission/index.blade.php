@@ -8,15 +8,19 @@
     
     <hr style="color: #d00606">
 
-    <a  class="btn btn-outline-primary btn-sm" id="buttonEdit" href="{{ route('admissions.create')}}"><b>NEW ADMISSION</b></a><br><br>
-
+    <a  class="btn btn-dark btn-sm" id="buttonEdit" href="{{ route('admissions.create')}}"><b>NEW ADMISSION</b></a><br><br>
+    <div class="input-group mb-3">
+            <input type="text" name="search" id="search-admissions" class="form-control my-0 py-1 " aria-label="Search admissions..." placeholder="..."> <a class="btn " onClick="window.location.reload();" style="color: rgb(6, 196, 6)"><i class="fa-solid fa-arrows-rotate"></i></a>
+        </div>
+    <div>
         <table class="table table-sm" style="text-align:left;">
             <thead class=""  style="color: black; background-color: #f5f5f5">
                 <tr>
                     <th style="width: 35%"><b>NAME</b></th>
-                    <th style="width: 25%"><b>ADMISSION DATE</b></th>
-                    <th style="width: 25%"><b>DISCHARGE DATE</b></th>
-                    <th style="width: 15%"><b>ACTIONS</b></th>
+                    <th style="width: 15%"><b>STATUS</b></th>
+                    <th style="width: 20%"><b>ADMISSION DATE</b></th>
+                    <th style="width: 20%"><b>DISCHARGE DATE</b></th>
+                    <th style="width: 10%"><b>ACTIONS</b></th>
                 <tr>
             </thead>
             <tbody id="dynamic-row" style="font-size:13px; vertical-align:middle">
@@ -31,9 +35,10 @@
                                     }else {
                                         echo strtoupper($patient_admission->lname.', '.$patient_admission->fname.', '.$patient_admission->mname.', '.$patient_admission->sname);
                                     } ?></b></td>
-                    <td style="width:25%"><b><?php $date = date_create($patient_admission->admission); echo date_format($date, "h:i A - M. d") ?></b></td>
-                    <td style="width: 25%"><b><?php if(is_null($patient_admission->discharge)){ echo 'N/A';}else{$date = date_create($patient_admission->discharge); echo date_format($date, "h:i A - M. d");} ?></b></td>
-                    <td style="width: 15%"><b><a class="btn btn-outline-warning btn-sm" id="buttonEdit" href="{{ route('dischargePage',  $patient_admission->id)}}"><b  style="font-size: 13px">DISCHARGE</b></a></b></td>
+                    <td style="width:15%"><b>{{ strtoupper($patient_admission->status) }}</b></td>
+                    <td style="width:20%"><b><?php $date = date_create($patient_admission->admission); echo date_format($date, "h:i A - M. d") ?></b></td>
+                    <td style="width: 20%"><b><?php if(is_null($patient_admission->discharge)){ echo 'N/A';}else{$date = date_create($patient_admission->discharge); echo date_format($date, "h:i A - M. d");} ?></b></td>
+                    <td style="width: 10%"><b><a class="btn btn-dark btn-sm" id="buttonEdit" href="{{ route('dischargePage',  $patient_admission->id)}}"><b  style="font-size: 13px">DISCHARGE</b></a></b></td>
                 </tr>
                 @endforeach
                 <tr>

@@ -104,7 +104,7 @@
     
             <div class="form-group row mb-0">
                 <div class="col-md-6 offset-md-2">
-                    <button type="submit" class="btn font-weight-bold btn-outline-success btn-sm" id="buttonEdit"><b>
+                    <button type="submit" class="btn font-weight-bold btn-dark btn-sm" id="buttonEdit" style="font-size: 13px"><b>
                         {{ __('SAVE') }}</b>
                     </button>
                 </div>

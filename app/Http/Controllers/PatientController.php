@@ -24,13 +24,10 @@ class PatientController extends Controller
     public function index()
     {
         // $patients_admissions = DB::table('patients')
-        // ->join('admissions', 'patients.id', '=', 'admissions.patient_id')
-        // ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'admissions.status as status')
-        // ->paginate(10);
+        //                             ->leftJoin('admissions', 'patients.id', '=', 'admissions.patient_id')
+        //                             ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'patients.status as status')->where('patients.status', "Inactive")->orWhere('patients.status', "Admitted")->orderby('last_name', 'asc')->paginate(10);
 
-        $patients_admissions = DB::table('patients')
-                                    ->leftJoin('admissions', 'patients.id', '=', 'admissions.patient_id')
-                                    ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'patients.status as status')->where('patients.status', "Inactive")->orWhere('patients.status', "Admitted")->orderby('last_name', 'asc')->paginate(10);
+        $patients_admissions = DB::table('patients')->orderby('last_name', 'asc')->paginate(10);
                                     
 
         return view('pages.patient.index', ['patients_admissions' => $patients_admissions]);
@@ -340,19 +337,23 @@ class PatientController extends Controller
             if(is_null(request('discharge_date')) == 'true'){
                 $discharge_date_time = Carbon::now('+8:00');
             }else{
-                $dd = request('discharge_time_date');
-                $dt = request('discharge_time_time');
+                $dd = request('discharge_date');
+                $dt = request('discharge_time');
                 $seconds = '00';
                 $discharge_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $dd. ' '. $dt .':'. $seconds);
             }
 
+            //UPDATE THIS
+            $data = DB::table('admissions')->where('patient_id', $request->patient_id)->whereNull('discharge_date_time')->first();
+
+
             //UPDATE ADMISSION
              $admission_status = DB::table('admissions')
-                        ->where('id', $request->id)
+                        ->where('id', $data->id)
                         ->update(['status' => 'Discharged' ]);
             
             $admission_date_time = DB::table('admissions')
-                        ->where('id', $request->id)
+                        ->where('id', $data->id)
                         ->update(['discharge_date_time' => $discharge_date_time]);
             
             $patient_status = DB::table('patients')
@@ -376,11 +377,8 @@ class PatientController extends Controller
     public function searchPatients(Request $request)
     {
             $keyword = $request->get('keyword');
-
             $patient_admissions = DB::table('patients')
-            ->leftJoin('admissions', 'patients.id', '=', 'admissions.patient_id')
-            ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'patients.status as status', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge')
-            ->where(function ($query) use ($keyword) {
+                            ->where(function ($query) use ($keyword) {
                                 $query->where('patients.id', 'LIKE', '%'.$keyword.'%')
                                         ->orWhere('patients.first_name', 'LIKE', '%'.$keyword.'%')
                                         ->orWhere('patients.middle_name', 'LIKE', '%'.$keyword.'%')

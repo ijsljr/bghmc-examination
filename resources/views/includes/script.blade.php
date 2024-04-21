@@ -76,4 +76,25 @@
                 }
         });
     });
+
+    $('body').on('keyup','#search-admissions',function()
+    {
+        var keyword = $(this).val();
+
+        $.ajax({
+            type: "POST",
+            url: "{{ route('searchAdmissions')}}",
+            dataType: "json",
+            data: {keyword: keyword,
+                    _token: '{{csrf_token()}}'
+            },
+            success: function(res){
+                    console.log("hello");
+                    $('#dynamic-row').empty();
+                    $('#dynamic-row').append(res);
+                    
+
+                }
+        });
+    });
 </script>

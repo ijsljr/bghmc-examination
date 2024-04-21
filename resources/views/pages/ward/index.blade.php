@@ -3,12 +3,12 @@
 @section('content')
 
     <h3 class="m-0 font-weight-bold" style="text-align: center;">
-        <b style="color: #d00606">W A R D</b><b> L I S T</b>
+        <b style="color: #d00606">W A R D S</b><b> L I S T</b>
     </h3>
     
     <hr style="color: #d00606">
 
-    <a  class="btn btn-outline-primary btn-sm" id="buttonEdit" href={{ route('wards.create') }}><b>NEW WARD</b></a>
+    <a  class="btn btn-dark btn-sm" id="buttonEdit" href={{ route('wards.create') }}><b>NEW WARD</b></a>
     <br><br>
 
         <table class="table table-sm" style="text-align:left;">

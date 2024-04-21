@@ -16,7 +16,7 @@
 
     <div class="card-body">
 
-        <form method="POST" action="{{ route('admissions.store')}}" style="font-size: 13px">
+        <form method="POST" action="{{ route('admissions.store')}}" style="font-size: 13px; font-weight: bold">
             @csrf
 
             <div class="row mb-3" id="ward_div">
@@ -40,7 +40,7 @@
             </div>
 
             <div class="row mb-3" id="ward_div">
-                <label for="ward_id" class="col-sm-2 col-form-label">Ward</label>
+                <label for="ward_id" class="col-sm-2 col-form-label">WARD</label>
                 <div class="col-sm-10" >
                 <select style="color: black; font-size: 13px; font-weight: bold" class="form-control" id="ward_id" name="ward_id" required>
                     <option value=""selected disabled>---</option>
@@ -52,7 +52,7 @@
             </div>
 
             <div class="row mb-3">
-                <label for="admission_date" class="col-sm-2 col-form-label">Admission Date/Time</label>
+                <label for="admission_date" class="col-sm-2 col-form-label">ADMISSION DATE/TIME</label>
                 <div class="col-sm-5" style="color: black; font-size: 13px; font-weight: bold">
                     <input type="date" class="form-control" style="color: black; font-size: 13px; font-weight: bold" name="admission_date" id="admission_date" max="<?php echo date('Y-m-d'); ?>" required>
                 </div>
@@ -72,7 +72,7 @@
     
             <div class="form-group row mb-0">
                 <div class="col-md-6 offset-md-2">
-                    <button type="submit" class="btn font-weight-bold btn-outline-success btn-sm" id="buttonEdit"><b>
+                    <button type="submit" class="btn font-weight-bold btn-dark btn-sm" id="buttonEdit"><b>
                         {{ __('ADMIT') }}</b>
                     </button>
                 </div>

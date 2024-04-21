@@ -37,11 +37,12 @@ Route::delete('/patients/{id}/hard-delete', 'App\Http\Controllers\PatientControl
 
 
 // CUSTOM ROUTE - ADMISSION MODEL ---------------------------------------------------------------------------------
+Route::post('/admission/search','App\Http\Controllers\AdmissionController@searchAdmissions')->name('searchAdmissions');
 Route::get('/admission/{id}/admit', 'App\Http\Controllers\AdmissionController@admitPatientPage')->name('admitPage');
 Route::get('/admission/{id}/discharge', 'App\Http\Controllers\AdmissionController@dischargePatientPage')->name('dischargePage');
 
-Route::post('/admission/admit-patient', 'App\Http\Controllers\AdmissionController@admitPatient')->name('admittingPatient');
-Route::put('/admission/{id}/discharge-patient', 'App\Http\Controllers\AdmissionController@dischargePatient')->name('dischargingPatient');
+Route::post('/admission/admit-patient', 'App\Http\Controllers\AdmissionController@admitPatients')->name('admittingPatient');
+Route::put('/admission/{id}/discharge-patient', 'App\Http\Controllers\AdmissionController@dischargePatients')->name('dischargingPatient');
 // ----------------------------------------------------------------------------------------------------------------
 
 //RESOURCE ROUTES -------------------------------------------------------------------------------------------------
