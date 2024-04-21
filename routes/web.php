@@ -35,6 +35,15 @@ Route::get('/patients/recycle-bin', 'App\Http\Controllers\PatientController@recy
 Route::delete('/patients/{id}/hard-delete', 'App\Http\Controllers\PatientController@hardDelete')->name('patientHardDelete');
 // ----------------------------------------------------------------------------------------------------------------
 
+
+// CUSTOM ROUTE - ADMISSION MODEL ---------------------------------------------------------------------------------
+Route::get('/admission/{id}/admit', 'App\Http\Controllers\AdmissionController@admitPatientPage')->name('admitPage');
+Route::get('/admission/{id}/discharge', 'App\Http\Controllers\AdmissionController@dischargePatientPage')->name('dischargePage');
+
+Route::post('/admission/admit-patient', 'App\Http\Controllers\AdmissionController@admitPatient')->name('admittingPatient');
+Route::put('/admission/{id}/discharge-patient', 'App\Http\Controllers\AdmissionController@dischargePatient')->name('dischargingPatient');
+// ----------------------------------------------------------------------------------------------------------------
+
 //RESOURCE ROUTES -------------------------------------------------------------------------------------------------
 Route::resource('/patients', 'App\Http\Controllers\PatientController');
 Route::resource('/admissions', 'App\Http\Controllers\AdmissionController');

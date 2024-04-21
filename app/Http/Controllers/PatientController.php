@@ -30,7 +30,7 @@ class PatientController extends Controller
 
         $patients_admissions = DB::table('patients')
                                     ->leftJoin('admissions', 'patients.id', '=', 'admissions.patient_id')
-                                    ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'patients.status as status')->orderby('last_name', 'asc')->paginate(10);
+                                    ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'patients.status as status')->where('patients.status', "Inactive")->orWhere('patients.status', "Admitted")->orderby('last_name', 'asc')->paginate(10);
                                     
 
         return view('pages.patient.index', ['patients_admissions' => $patients_admissions]);
@@ -61,7 +61,6 @@ class PatientController extends Controller
         $value = request('checkbox_admit');
 
         if ($value == '1'){
-
             //CREATE A NEW PATIENT
             $patient_details = new Patient();
             $patient_details->first_name = request('first_name');
@@ -71,10 +70,7 @@ class PatientController extends Controller
             $patient_details->address = request('address');
             $patient_details->birthdate = request('birthdate');
             $patient_details->status = 'Admitted';
-            // $patient_details->status = "admitted";
-            // $patient_details->author = Auth::user()->id;
             $patient_details->save();
-            
             //PREPARE VARIABLES
             $fname = request('first_name');
             $mname = request('middle_name');
@@ -91,32 +87,38 @@ class PatientController extends Controller
                                                 ->where('suffix_name',  $sname)
                                                 ->where('address',  $address)
                                                 ->where('birthdate',  $birthdate)
-                                                ->first();  
-            
-
-
-            //CREATE NEW ADMISSION
-            $admission_details = new Admission();
-            $admission_details->patient_id = $patient_id->id;
-            $admission_details->ward_id = request('ward');
+                                                ->first();              
 
             //TEST WHICH ADMISSION DATE AND TIME TO USE(CURRENT OR USER INPUT)
             if(is_null(request('admission_date')) == 'true'){
-                $admission_details->admission_date_time = Carbon::now('+8:00');
-            }else{
-                $ad = request('admission_date');
-                $at = request('admission_time');
-                $seconds = '00';
-                $admission_details->admission_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $ad. ' '. $at .':'. $seconds);
-            }
-            
+
+                            //CREATE NEW ADMISSION
+            $admission_details = new Admission();
+            $admission_details->patient_id = $patient_id->id;
+            $admission_details->ward_id = request('ward');
+            $admission_details->admission_date_time = Carbon::now('+8:00');
             $admission_details->status = 'Admitted';
-            // $admission_details->author = Auth::user()->id;
             $admission_details->save();
 
             return redirect()->route('patients.index')
                                 ->with('success', 'New patient has been admitted.');
-            
+            }else{
+                $ad = request('admission_date');
+                $at = request('admission_time');
+                $seconds = '00';
+
+                            //CREATE NEW ADMISSION
+            $admission_details = new Admission();
+            $admission_details->patient_id = $patient_id->id;
+            $admission_details->ward_id = request('ward');
+            $admission_details->admission_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $ad. ' '. $at .':'. $seconds);
+            $admission_details->status = 'Admitted';
+            $admission_details->save();
+
+            return redirect()->route('patients.index')
+                                ->with('success', 'New patient has been admitted.');
+
+            }            
         } else {
 
             //CREATE A NEW PATIENT
@@ -127,7 +129,6 @@ class PatientController extends Controller
             $patient_details->suffix_name = request('suffix_name');
             $patient_details->address = request('address');
             $patient_details->birthdate = request('birthdate');
-            // $patient_details->author = Auth::user()->id;
             $patient_details->save();
 
             return redirect()->route('patients.index')
@@ -293,7 +294,9 @@ class PatientController extends Controller
             return redirect()->route('patients.index')
                                       ->with('danger', 'Patient is already admitted.');
         } else{
-            $x = 0;
+            $patient_status_update = DB::table('patients')
+                            ->where('id', $request->patient_id)
+                            ->update(['status' => 'Admitted']);
 
             //CREATE NEW ADMISSION
             $admission_details = new Admission();
@@ -344,10 +347,18 @@ class PatientController extends Controller
             }
 
             //UPDATE ADMISSION
-             $admission = DB::table('admissions')
+             $admission_status = DB::table('admissions')
                         ->where('id', $request->id)
-                        ->update(['status' => 'Discharged',
-                                    'discharge_date_time' => $discharge_date_time]);
+                        ->update(['status' => 'Discharged' ]);
+            
+            $admission_date_time = DB::table('admissions')
+                        ->where('id', $request->id)
+                        ->update(['discharge_date_time' => $discharge_date_time]);
+            
+            $patient_status = DB::table('patients')
+                        ->where('id', $request->patient_id)
+                        ->update(['status' => 'Discharged']);
+                
 
 
             return redirect()->route('patients.index')

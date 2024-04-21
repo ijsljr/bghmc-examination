@@ -16,7 +16,7 @@
 
     <div class="card-body">
 
-        <form method="POST" action="{{ route('dischargePatient', $patients_admission_details->id)}}" style="font-size: 13px">
+        <form method="POST" action="{{ route('dischargingPatient', $patients_admission_details->id)}}" style="font-size: 13px">
             @csrf
             @method('PUT')
             

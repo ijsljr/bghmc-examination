@@ -16,60 +16,41 @@
 
     <div class="card-body">
 
-        <form method="POST" action="{{ route('admitPatient')}}">
+        <form method="POST" action="{{ route('admitPatient')}}" style="font-size: 13px">
             @csrf
             
             <input type="hidden" id="patient_id" name="patient_id" value="{{ $patient_details->id }}">
 
             <div class="row mb-3">
-                <label for="first_name" class="col-sm-2 col-form-label">First Name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" name="first_name" id="first_name" value="{{ $patient_details->first_name }}" readonly>
-                </div>
+                <label for="first_name" class="col-sm-2 col-form-label">NAME</label>
+                <label class="col-sm-6 col-form-label" name="first_name" id="first_name" value=""  style="font-weight: bold"><?php if(empty($patient_details->middle_name) && isset($patient_details->suffix_name)  ) {
+                                        echo strtoupper($patient_details->last_name.', '.$patient_details->first_name.', '.$patient_details->suffix_name);
+                                    } else if (empty($patient_details->suffix_name) && isset($patient_details->middle_name)){
+                                        echo strtoupper($patient_details->last_name.', '.$patient_details->first_name.', '.$patient_details->middle_name);
+                                    } else if (empty($patient_details->suffix_name) && empty($patient_details->middle_name)){
+                                        echo strtoupper($patient_details->last_name.', '.$patient_details->first_name);
+                                    }else {
+                                        echo strtoupper($patient_details->last_name.', '.$patient_details->first_name.', '.$patient_details->middle_name.', '.$patient_details->suffix_name);
+                                    } ?></label>
             </div>
     
             <div class="row mb-3">
-                <label for="middle_name" class="col-sm-2 col-form-label">Middle Name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" name="middle_name" id="middle_name" value="{{ $patient_details->middle_name }}" readonly>
-                </div>
+                <label for="address" class="col-sm-2 col-form-label">ADDRESS</label>
+                <label class="col-sm-6 col-form-label" name="address" id="address"  style="font-weight: bold">{{ strtoupper($patient_details->address) }}</label>
             </div>
     
             <div class="row mb-3">
-                <label for="last_name" class="col-sm-2 col-form-label">Last Name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" name="last_name" id="last_name" value="{{ $patient_details->last_name }}" readonly>
-                </div>
-            </div>
-    
-            <div class="row mb-3">
-                <label for="suffix_name" class="col-sm-2 col-form-label">Suffix Name</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" name="suffix_name" id="suffix_name" value="{{ $patient_details->suffix_name }}" readonly>
-                </div>
-            </div>
-    
-            <div class="row mb-3">
-                <label for="address" class="col-sm-2 col-form-label">Address</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" name="address" id="address" value="{{ $patient_details->address }}"  readonly>
-                </div>
-            </div>
-    
-            <div class="row mb-3">
-                <label for="birthdate" class="col-sm-2 col-form-label">Birthdate</label>
-                <div class="col-sm-10">
-                    <input type="date" class="form-control" name="birthdate" id="birthdate" value="{{ $patient_details->birthdate }}"  readonly>
-                </div>
+                <label for="birthdate" class="col-sm-2 col-form-label">DATE OF BIRTH</label>
+                <label class="col-sm-6 col-form-label" name="birthdate" id="birthdate"  style="font-weight: bold">{{ $patient_details->birthdate }}</label>
             </div>
 
             <div class="row mb-3" id="ward_div">
                 <label for="ward" class="col-sm-2 col-form-label">Ward</label>
-                <div class="col-sm-10">
-                <select style="color: black;" class="form-control" id="ward" name="ward" required>
+                <div class="col-sm-10" >
+                <select style="color: black; font-size: 13px; font-weight: bold" class="form-control" id="ward" name="ward" required>
                     <option value=""selected disabled>---</option>
                     @foreach ($wards as $ward)
-                    <option value="{{ $ward->id }}">{{ $ward->ward_name}}</option>
+                    <option value="{{ $ward->id }}" style="color: black; font-size: 13px; font-weight: bold">{{ $ward->ward_name}}</option>
                     @endforeach
                 </select>
                 </div>
@@ -77,17 +58,17 @@
 
             <div class="row mb-3">
                 <label for="admission_date" class="col-sm-2 col-form-label">Admission Date/Time</label>
-                <div class="col-sm-5">
-                    <input type="date" class="form-control" name="admission_date" id="admission_date" max="<?php echo date('Y-m-d'); ?>" required>
+                <div class="col-sm-5" style="color: black; font-size: 13px; font-weight: bold">
+                    <input type="date" class="form-control" style="color: black; font-size: 13px; font-weight: bold" name="admission_date" id="admission_date" max="<?php echo date('Y-m-d'); ?>" required>
                 </div>
                 <div class="col-sm-5">
-                    <input type="time" class="form-control" name="admission_time" id="admission_time" required>
+                    <input type="time" class="form-control" style="color: black; font-size: 13px; font-weight: bold" name="admission_time" id="admission_time" required>
                 </div>
                 <div class="row mb-3">
                     <label for="alt_datetime" class="col-sm-2 col-form-label"></label>
                     <div class="col-sm-10">
                         <input type="checkbox" id="alt_datetime" name="alt_datetime" value="{{ date('Y-m-d H:i:s'); }}" onclick="use_current_datetime()">
-                        <label for="checkbox_admit"><span style="b">Use current date and time ({{date('F j, Y ');}}</span><span id="clock"></span><span>)</span></label><br>
+                        <label for="checkbox_admit"><span style="color: black; font-size: 13px; font-weight: bold">Use current date and time ({{date('F j, Y ');}}</span><span id="clock" style="color: black; font-size: 13px; font-weight: bold"></span><span>)</span></label><br>
                     </div>
                 </div>
             </div>

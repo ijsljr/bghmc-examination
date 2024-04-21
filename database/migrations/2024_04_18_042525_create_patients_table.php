@@ -21,7 +21,7 @@ class CreatePatientsTable extends Migration
             $table->string('suffix_name')->nullable();
             $table->string('address');
             $table->date('birthdate');
-            $table->string('status')->default('inactive');
+            $table->string('status')->default('Inactive');
             $table->timestamps();
         });
     }

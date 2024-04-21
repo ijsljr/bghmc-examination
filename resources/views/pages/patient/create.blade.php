@@ -16,7 +16,7 @@
 
     <div class="card-body">
 
-        <form method="POST" action="{{ route('patients.store')}}">
+        <form method="POST" action="{{ route('patients.store')}}" style="font-size: 13px">
             @csrf
 
                                     
@@ -30,54 +30,54 @@
             <div class="row mb-3">
                 <label for="first_name" class="col-sm-2 col-form-label">First Name</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="first_name" id="first_name" maxlength="64" required>
+                    <input type="text" class="form-control" name="first_name" id="first_name" style="font-size: 13px; font-weight: bold;" maxlength="64" required>
                 </div>
             </div>
     
             <div class="row mb-3">
                 <label for="middle_name" class="col-sm-2 col-form-label">Middle Name</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="middle_name" id="middle_name" maxlength="64">
+                    <input type="text" class="form-control" name="middle_name" id="middle_name" style="font-size: 13px; font-weight: bold;" maxlength="64">
                 </div>
             </div>
     
             <div class="row mb-3">
                 <label for="last_name" class="col-sm-2 col-form-label">Last Name</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="last_name" id="last_name" maxlength="64" required>
+                    <input type="text" class="form-control" name="last_name" id="last_name" style="font-size: 13px; font-weight: bold;" maxlength="64" required>
                 </div>
             </div>
     
             <div class="row mb-3">
                 <label for="suffix_name" class="col-sm-2 col-form-label">Suffix Name</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="suffix_name" id="suffix_name" maxlength="16">
+                    <input type="text" class="form-control" name="suffix_name" id="suffix_name" style="font-size: 13px; font-weight: bold;" maxlength="16">
                 </div>
             </div>
     
             <div class="row mb-3">
                 <label for="address" class="col-sm-2 col-form-label">Address</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="address" id="address" maxlength="120" required>
+                    <input type="text" class="form-control" name="address" id="address" style="font-size: 13px; font-weight: bold;" maxlength="120" required>
                 </div>
             </div>
     
             <div class="row mb-3">
                 <label for="birthdate" class="col-sm-2 col-form-label">Birthdate</label>
                 <div class="col-sm-10">
-                    <input type="date" class="form-control" name="birthdate" id="birthdate" max="<?php echo date('Y-m-d'); ?>" required>
+                    <input type="date" class="form-control" name="birthdate" id="birthdate" style="font-size: 13px; font-weight: bold;" max="<?php echo date('Y-m-d'); ?>" required>
                 </div>
             </div>
 
             <!-- FIELDS FOR ADMITTING PATIENT-->
             <div id="hidden_fields" style="display: none">
-                <div class="row mb-3" id="ward_div">
+                <div class="row mb-3" id="ward_div" >
                     <label for="ward" class="col-sm-2 col-form-label">Ward</label>
-                    <div class="col-sm-10">
-                    <select style="color: black;" class="form-control" id="ward" name="ward">
+                    <div class="col-sm-10" style="font-size: 13px; font-weight: bold;">
+                    <select style="color: black;" class="form-control" style="font-size: 13px; font-weight: bold;" id="ward" name="ward">
                         <option value=""selected disabled>---</option>
                         @foreach ($wards as $ward)
-                        <option value="{{ $ward->id }}">{{ $ward->ward_name}}</option>
+                        <option value="{{ $ward->id }}" style="font-size: 13px; font-weight: bold;">{{ $ward->ward_name}}</option>
                         @endforeach
                     </select>
                     </div>
@@ -86,16 +86,16 @@
                 <div class="row mb-3">
                     <label for="admission_date" class="col-sm-2 col-form-label">Admission Date/Time</label>
                     <div class="col-sm-5">
-                        <input type="date" class="form-control" name="admission_date" id="admission_date" max="<?php echo date('Y-m-d'); ?>">
+                        <input type="date" class="form-control" name="admission_date" id="admission_date" style="font-size: 13px; font-weight: bold;" max="<?php echo date('Y-m-d'); ?>">
                     </div>
                     <div class="col-sm-5">
-                        <input type="time" class="form-control" name="admission_time" id="admission_time">
+                        <input type="time" class="form-control" name="admission_time" id="admission_time" style="font-size: 13px; font-weight: bold;">
                     </div>
                     <div class="row mb-3">
                         <label for="alt_datetime" class="col-sm-2 col-form-label"></label>
                         <div class="col-sm-10">
                             <input type="checkbox" id="alt_datetime" name="alt_datetime" value="{{ date('Y-m-d H:i:s'); }}" onclick="use_current_datetime()">
-                            <label for="checkbox_admit"><span style="b">Use current date and time ({{date('F j, Y ');}}</span><span id="clock"></span><span>)</span></label><br>
+                            <label for="checkbox_admit"><span style="font-size: 13px; font-weight: bold;">Use current date and time ({{date('F j, Y ');}}</span><span id="clock" style="font-size: 13px; font-weight: bold;"></span><span>)</span></label><br>
                         </div>
                     </div>
                 </div>
