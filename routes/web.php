@@ -23,8 +23,12 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 // CUSTOM ROUTES - PATIENT MODEL ----------------------------------------------------------------------------------
 Route::post('/patients/search','App\Http\Controllers\PatientController@searchPatients')->name('searchPatients');
-Route::get('/patients/{id}/admit-patient', 'App\Http\Controllers\PatientController@admitPatient')->name('admitPatient');
-Route::get('/patients/{id}/discharge-patient', 'App\Http\Controllers\PatientController@dischargePatient')->name('dischargePatient');
+Route::get('/patients/{id}/admit', 'App\Http\Controllers\PatientController@admitPatientPage')->name('admit');
+Route::get('/patients/{id}/discharge', 'App\Http\Controllers\PatientController@dischargePatientPage')->name('discharge');
+
+Route::post('/patients/admit-patient', 'App\Http\Controllers\PatientController@admitPatient')->name('admitPatient');
+Route::put('/patients/{id}/discharge-patient', 'App\Http\Controllers\PatientController@dischargePatient')->name('dischargePatient');
+
 Route::get('/patients/{id}/soft-delete', 'App\Http\Controllers\PatientController@softDelete')->name('patientSoftDelete');
 Route::get('/patients/{id}/restore', 'App\Http\Controllers\PatientController@restore')->name('patientRestore');
 Route::get('/patients/recycle-bin', 'App\Http\Controllers\PatientController@recycleBinList')->name('recycleBinList');

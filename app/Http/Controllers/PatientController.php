@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+
 class PatientController extends Controller
 {
     /**
@@ -29,7 +30,7 @@ class PatientController extends Controller
 
         $patients_admissions = DB::table('patients')
                                     ->leftJoin('admissions', 'patients.id', '=', 'admissions.patient_id')
-                                    ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'patients.status as status')->paginate(10);
+                                    ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge', 'patients.status as status')->orderby('last_name', 'asc')->paginate(10);
                                     
 
         return view('pages.patient.index', ['patients_admissions' => $patients_admissions]);
@@ -42,7 +43,7 @@ class PatientController extends Controller
      */
     public function create()
     {
-        $wards = DB::table('wards')->orderBy('ward_name', 'asc')->paginate(10);
+        $wards = DB::table('wards')->orderBy('ward_name', 'asc')->get();
 
         return view('pages.patient.create', ['wards' => $wards]);
     }
@@ -101,7 +102,7 @@ class PatientController extends Controller
 
             //TEST WHICH ADMISSION DATE AND TIME TO USE(CURRENT OR USER INPUT)
             if(is_null(request('admission_date')) == 'true'){
-                $admission_details->admission_date_time = request('alt_datetime');
+                $admission_details->admission_date_time = Carbon::now('+8:00');
             }else{
                 $ad = request('admission_date');
                 $at = request('admission_time');
@@ -140,11 +141,11 @@ class PatientController extends Controller
      * @param  \App\Models\Patient  $patient
      * @return \Illuminate\Http\Response
      */
-    public function show(Patient $patient)
+    public function show(Request $request)
     {
-        $expense = Expenses::find($request->expense);
+        $patient_details = Patient::find($request->patient);
 
-        return view('expenses.show', compact('expense'));
+        return view('pages.patient.show', compact('patient_details'));
     }
 
     /**
@@ -239,45 +240,118 @@ class PatientController extends Controller
        }
     }
 
-    public function admitPatient(Request $request, Patient $patient)
+
+    public function admitPatientPage($id)
     {
         //CHECK IF PATIENT HAS AN EXISTING ADMISSION
-        $patient_status = DB::table('patients')->select('status')->where('id', $request->id)->first();
+            $patient_status = DB::table('patients')->select('status')->where('id', $id)->first();
 
-        if($patient_status->status == 'Admitted'){
+        if($patient_status->status == 'Admitted'){  
+           
             return redirect()->route('patients.index')
-                                      ->with('danger', 'Admission failed. Patient is already admitted.');
-        } else if($patient_status->status == 'Inactive'){
-            $patient = DB::table('patients')
-            ->where('id', $request->id)
-            ->update(['status' => 'Recycled']);
-  
-            return redirect()->route('patients.index')
-                                      ->with('success', 'Successfully deleted the patients account. You can still restore deleted files from the recycle bin.');
+                                      ->with('danger', 'Patient is already admitted.');
         } else{
-            return redirect()->route('patients.index');
-  
+
+            $patient_details = Patient::find($id);
+
+            $wards = DB::table('wards')->orderBy('ward_name', 'asc')->get();
+
+            return view('pages.patient.admission', ['patient_details' => $patient_details], ['wards' => $wards]);
         }
+    }
+
+    public function dischargePatientPage($id)
+    {
+        //CHECK IF PATIENT HAS AN EXISTING ADMISSION
+        $patient_status = DB::table('patients')->select('status')->where('id', $id)->first();
+
+        if($patient_status->status == 'Admitted'){  
+ 
+            $patient_details = Patient::find($id);
+  
+            $patients_admission_details = DB::table('admissions')
+                                ->join('wards', 'admissions.ward_id', '=', 'wards.id')
+                                ->select('admissions.*', 'wards.id as ward_id', 'wards.ward_name as ward_name')
+                                ->where('admissions.patient_id', $id)
+                                ->first();
+
+            return view('pages.patient.discharge', ['patient_details' => $patient_details], ['patients_admission_details' => $patients_admission_details]);
+
+        } else{
+            return redirect()->route('patients.index')
+                                ->with('danger', 'Patient is not admitted.');
+        }
+    }
+
+    public function admitPatient(Request $request)
+    {
+        //CHECK IF PATIENT HAS AN EXISTING ADMISSION
+        $patient_status = DB::table('patients')->select('status')->where('id', $request->patient_id)->first();
+
+        if($patient_status == 'Admitted'){
+
+            return redirect()->route('patients.index')
+                                      ->with('danger', 'Patient is already admitted.');
+        } else{
+            $x = 0;
+
+            //CREATE NEW ADMISSION
+            $admission_details = new Admission();
+            $admission_details->patient_id = $request->patient_id;
+            $admission_details->ward_id = request('ward');
+
+            //TEST WHICH ADMISSION DATE AND TIME TO USE(CURRENT OR USER INPUT)
+            if(is_null(request('admission_date')) == 'true'){
+                $admission_details->admission_date_time = request('alt_datetime');
+            }else{
+                $ad = request('admission_date');
+                $at = request('admission_time');
+                $seconds = '00';
+                $admission_details->admission_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $ad. ' '. $at .':'. $seconds);
+            }
+            
+            $admission_details->status = 'Admitted';
+            // $admission_details->author = Auth::user()->id;
+            $admission_details->save();
+
+            return redirect()->route('patients.index')
+                                ->with('success', 'Patient has been admitted.');
+        }
+
+
     }
 
     public function dischargePatient(Request $request, Patient $patient)
     {
-        //CHECK IF PATIENT HAS AN EXISTING ADMISSION
-        $patient_status = DB::table('patients')->select('status')->where('id', $request->id)->first();
 
-        if($patient_status->status == 'Admitted'){
-            $patient = DB::table('patients')
-            ->where('id', $request->id)
-            ->update(['status' => 'Discharged']);
-  
+        //CHECK IF PATIENT HAS AN EXISTING ADMISSION
+        $patient_status = DB::table('patients')->select('status')->where('id', $request->patient_id)->first();
+
+        if($patient_status == 'Inactive'){
+
             return redirect()->route('patients.index')
-                                      ->with('success', 'Successfully discharged the patient.');
-        } else if($patient_status->status == 'Inactive'){
-            return redirect()->route('patients.index')
-                                      ->with('danger', 'Discharge failed. Patient is not admitted.');
+                                      ->with('danger', 'Patient is not admitted.');
         } else{
-            return redirect()->route('patients.index');
-  
+
+            //TEST WHICH ADMISSION DATE AND TIME TO USE(CURRENT OR USER INPUT)
+            if(is_null(request('discharge_date')) == 'true'){
+                $discharge_date_time = Carbon::now('+8:00');
+            }else{
+                $dd = request('discharge_time_date');
+                $dt = request('discharge_time_time');
+                $seconds = '00';
+                $discharge_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $dd. ' '. $dt .':'. $seconds);
+            }
+
+            //UPDATE ADMISSION
+             $admission = DB::table('admissions')
+                        ->where('id', $request->id)
+                        ->update(['status' => 'Discharged',
+                                    'discharge_date_time' => $discharge_date_time]);
+
+
+            return redirect()->route('patients.index')
+                                ->with('success', 'Patient has been successfully discharged.');
         }
     }
 
@@ -293,7 +367,7 @@ class PatientController extends Controller
             $keyword = $request->get('keyword');
 
             $patient_admissions = DB::table('patients')
-            ->join('admissions', 'patients.id', '=', 'admissions.patient_id')
+            ->leftJoin('admissions', 'patients.id', '=', 'admissions.patient_id')
             ->select('patients.id','patients.last_name as lname', 'patients.first_name as fname', 'patients.middle_name as mname', 'patients.suffix_name as sname', 'patients.status as status', 'admissions.admission_date_time as admission', 'admissions.discharge_date_time as discharge')
             ->where(function ($query) use ($keyword) {
                                 $query->where('patients.id', 'LIKE', '%'.$keyword.'%')
@@ -304,9 +378,13 @@ class PatientController extends Controller
                                         ->orWhere('patients.address', 'LIKE', '%'.$keyword.'%')
                                         ->orWhere('patients.birthdate', 'LIKE', '%'.$keyword.'%')
                                         ->orWhere('patients.status', 'LIKE', '%'.$keyword.'%');
-                            })
+                            })->orderby('last_name', 'asc')
                             ->get();
-    
-            return view('includes.partials.patientSearch', compact('patient_admissions'))->render();
+            
+            $results = view('includes.partials.patientSearch', compact('patient_admissions'));
+            $view = $results->render();
+
+            return json_encode($view);
+
     }
 }

@@ -27,6 +27,19 @@
         }
     }
 
+    function use_current_datetime_discharge() {
+
+        if(alt_datetime.checked == true){
+            document.getElementById("discharge_date").disabled = true;
+            document.getElementById("discharge_time").disabled = true;
+            document.getElementById("discharge_date").required = false;
+            document.getElementById("discharge_time").required = false;
+        } else {
+            document.getElementById("discharge_date").disabled = false;
+            document.getElementById("discharge_time").disabled = false;
+        }
+    }
+
     function startTime() {
         const today = new Date();
         let h = today.getHours();
@@ -55,8 +68,10 @@
                     _token: '{{csrf_token()}}'
             },
             success: function(res){
+                    console.log("hello");
                     $('#dynamic-row').empty();
                     $('#dynamic-row').append(res);
+                    
 
                 }
         });

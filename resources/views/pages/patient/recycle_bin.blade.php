@@ -3,7 +3,7 @@
 @section('content')
 
     <h3 class="m-0 font-weight-bold" style="text-align: center;">
-        <b style="color: #d00606">P A T I E N T S </b><b> R E C Y C L E B I</b>
+        <b style="color: #d00606">P A T I E N T S </b><b> R E C Y C L E B I N</b>
     </h3>
     
     <hr style="color: #d00606">

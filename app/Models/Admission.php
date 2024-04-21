@@ -20,6 +20,7 @@ class Admission extends Model
 
     public function ward(): BelongsTo
     {
-        return $this->belongsTo(Admission::class);
+        return $this->belongsTo(Ward::class);
     }
+ 
 }
